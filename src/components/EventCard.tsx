@@ -1,0 +1,112 @@
+
+import React from 'react';
+import { AlertTriangle, MapPin, Clock, TrafficCone, PoliceCar, PowerOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Event } from '@/types/events';
+import { useEvents } from '@/contexts/EventContext';
+
+// Format timestamp to a readable format
+const formatTime = (timestamp: number): string => {
+  const minutes = Math.floor((Date.now() - timestamp) / (1000 * 60));
+  if (minutes < 1) return 'Just now';
+  if (minutes === 1) return '1 minute ago';
+  if (minutes < 60) return `${minutes} minutes ago`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours === 1) return '1 hour ago';
+  if (hours < 24) return `${hours} hours ago`;
+  
+  const days = Math.floor(hours / 24);
+  if (days === 1) return '1 day ago';
+  return `${days} days ago`;
+};
+
+// Get icon based on event type
+const getEventIcon = (type: Event['type']) => {
+  switch (type) {
+    case 'power-outage':
+      return <PowerOff className="text-signaldude-danger" />;
+    case 'traffic-jam':
+      return <TrafficCone className="text-signaldude-warning" />;
+    case 'police-arrest':
+      return <PoliceCar className="text-signaldude-primary" />;
+    default:
+      return <AlertTriangle className="text-signaldude-accent" />;
+  }
+};
+
+// Get color class based on event type
+const getEventColorClass = (type: Event['type']) => {
+  switch (type) {
+    case 'power-outage':
+      return 'bg-red-500/10 border-red-500/20';
+    case 'traffic-jam':
+      return 'bg-amber-500/10 border-amber-500/20';
+    case 'police-arrest':
+      return 'bg-blue-500/10 border-blue-500/20';
+    default:
+      return 'bg-slate-500/10 border-slate-500/20';
+  }
+};
+
+// Get title based on event type
+const getEventTitle = (type: Event['type']) => {
+  switch (type) {
+    case 'power-outage':
+      return 'Power Outage';
+    case 'traffic-jam':
+      return 'Traffic Jam';
+    case 'police-arrest':
+      return 'Police Activity';
+    default:
+      return 'Unknown Event';
+  }
+};
+
+interface EventCardProps {
+  event: Event;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  const { resolveEvent } = useEvents();
+
+  return (
+    <div className={`event-card animate-fade-in ${getEventColorClass(event.type)} ${!event.isActive ? 'opacity-60' : ''}`}>
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-2">
+          <div className="p-2 rounded-lg bg-signaldude-bg-dark">
+            {getEventIcon(event.type)}
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg">{getEventTitle(event.type)}</h3>
+            <div className="flex items-center gap-1 text-xs text-signaldude-text-muted">
+              <Clock size={14} />
+              <span>{formatTime(event.timestamp)}</span>
+            </div>
+          </div>
+        </div>
+        {event.isActive && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs h-8"
+            onClick={() => resolveEvent(event.id)}
+          >
+            Resolve
+          </Button>
+        )}
+      </div>
+      
+      {event.description && (
+        <p className="mt-2 text-sm text-signaldude-text-muted">{event.description}</p>
+      )}
+      
+      <div className="flex items-center gap-1 mt-2 text-xs text-signaldude-text-muted">
+        <MapPin size={14} />
+        <span>{event.location.address}</span>
+      </div>
+    </div>
+  );
+};
+
+export default EventCard;
