@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Event, EventType } from '@/types/events';
 import { toast } from '@/components/ui/sonner';
@@ -9,6 +8,8 @@ interface EventContextProps {
   resolveEvent: (id: string) => void;
   activeFilter: EventType | 'all';
   setActiveFilter: (filter: EventType | 'all') => void;
+  reportEvent: (type: EventType, description?: string) => void;
+  getCurrentLocation: () => Promise<{lat: number, lng: number} | null>;
 }
 
 const EventContext = createContext<EventContextProps | undefined>(undefined);
@@ -60,26 +61,106 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [activeFilter, setActiveFilter] = useState<EventType | 'all'>('all');
 
-  const addEvent = (type: EventType, description?: string) => {
-    // In a real app, we would get the user's actual location
-    const mockLocation = {
-      lat: 40.7128 + (Math.random() - 0.5) * 0.02, 
-      lng: -74.006 + (Math.random() - 0.5) * 0.02,
-      address: 'New York, NY'
-    };
-    
-    const newEvent: Event = {
-      id: Date.now().toString(),
-      type,
-      location: mockLocation,
-      reporter: 'Anonymous',
-      timestamp: Date.now(),
-      description,
-      isActive: true,
-    };
+  // Get user's current location
+  const getCurrentLocation = (): Promise<{lat: number, lng: number} | null> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        toast.error("Geolocation is not supported by your browser");
+        resolve(null);
+        return;
+      }
 
-    setEvents(prev => [newEvent, ...prev]);
-    toast.success("Event reported successfully!");
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          toast.error("Could not get your location");
+          resolve(null);
+        },
+        { enableHighAccuracy: true }
+      );
+    });
+  };
+
+  // Get address from coordinates using Google Maps Geocoding API
+  const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
+    try {
+      if (!window.google) {
+        return "Unknown location";
+      }
+      
+      const geocoder = new window.google.maps.Geocoder();
+      const response = await new Promise<google.maps.GeocoderResponse>((resolve, reject) => {
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+          if (status === "OK" && results && results[0]) {
+            resolve(results);
+          } else {
+            reject(status);
+          }
+        });
+      });
+      
+      if (response && response[0]) {
+        return response[0].formatted_address;
+      }
+      
+      return "Unknown location";
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return "Unknown location";
+    }
+  };
+
+  // Report a new event with user's location
+  const reportEvent = async (type: EventType, description?: string) => {
+    try {
+      const location = await getCurrentLocation();
+      
+      if (!location) {
+        toast.error("Could not get your location to report event");
+        return;
+      }
+      
+      let address = "Unknown location";
+      
+      try {
+        if (window.google) {
+          address = await getAddressFromCoordinates(location.lat, location.lng);
+        }
+      } catch (error) {
+        console.error("Error getting address:", error);
+      }
+      
+      const newEvent: Event = {
+        id: Date.now().toString(),
+        type,
+        location: {
+          lat: location.lat,
+          lng: location.lng,
+          address
+        },
+        reporter: 'Anonymous',
+        timestamp: Date.now(),
+        description,
+        isActive: true,
+      };
+
+      setEvents(prev => [newEvent, ...prev]);
+      toast.success("Event reported successfully!");
+    } catch (error) {
+      console.error("Error reporting event:", error);
+      toast.error("Error reporting event");
+    }
+  };
+
+  const addEvent = (type: EventType, description?: string) => {
+    // Keep compatibility with old code
+    reportEvent(type, description);
   };
 
   const resolveEvent = (id: string) => {
@@ -97,7 +178,9 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addEvent,
       resolveEvent,
       activeFilter,
-      setActiveFilter
+      setActiveFilter,
+      reportEvent,
+      getCurrentLocation
     }}>
       {children}
     </EventContext.Provider>

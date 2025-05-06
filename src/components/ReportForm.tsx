@@ -1,30 +1,60 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useEvents } from '@/contexts/EventContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Car, PowerOff, TrafficCone, Lock } from 'lucide-react';
+import { Car, PowerOff, TrafficCone, Lock, MapPin, Loader2 } from 'lucide-react';
 import { EventType } from '@/types/events';
 import { cn } from '@/lib/utils';
 import LoginDialog from './LoginDialog';
 
 const ReportForm: React.FC = () => {
-  const { addEvent } = useEvents();
+  const { reportEvent, getCurrentLocation } = useEvents();
   const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<EventType | null>(null);
   const [description, setDescription] = useState('');
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationPreview, setLocationPreview] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedType) return;
     
-    addEvent(selectedType, description);
+    reportEvent(selectedType, description);
     setOpen(false);
     setSelectedType(null);
     setDescription('');
+    setLocationPreview(null);
+  };
+
+  const checkLocationPreview = async () => {
+    setIsGettingLocation(true);
+    setLocationPreview(null);
+    
+    try {
+      const location = await getCurrentLocation();
+      
+      if (location && window.google) {
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ 'location': location }, (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            setLocationPreview(results[0].formatted_address);
+          } else {
+            setLocationPreview('Unable to determine your location address');
+          }
+        });
+      } else {
+        setLocationPreview('Location coordinates available, but address lookup requires Google Maps API');
+      }
+    } catch (error) {
+      console.error('Error getting location preview:', error);
+      setLocationPreview('Error getting location');
+    } finally {
+      setIsGettingLocation(false);
+    }
   };
 
   // If user is not authenticated, show login button instead
@@ -50,8 +80,52 @@ const ReportForm: React.FC = () => {
       <DialogContent className="bg-signaldude-bg-light text-signaldude-text border-slate-700 w-[90%] max-w-md">
         <DialogHeader>
           <DialogTitle className="gradient-text text-xl font-bold">Report New Event</DialogTitle>
+          <DialogDescription className="text-signaldude-text-muted">
+            Report an event at your current location
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Location preview */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium text-signaldude-text-muted">Your Location</label>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                className="h-8 gap-1"
+                onClick={checkLocationPreview}
+                disabled={isGettingLocation}
+              >
+                {isGettingLocation ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPin size={14} />
+                    <span>Check Location</span>
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            <div className="bg-signaldude-bg-dark rounded-lg border border-slate-700 p-3 min-h-[60px] flex items-center text-sm">
+              {locationPreview ? (
+                <div className="flex gap-2 items-center">
+                  <MapPin size={16} className="text-signaldude-primary flex-shrink-0" />
+                  <span>{locationPreview}</span>
+                </div>
+              ) : (
+                <span className="text-signaldude-text-muted">
+                  Click "Check Location" to verify where you're reporting from
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* Event type selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-signaldude-text-muted">Event Type</label>
             <div className="grid grid-cols-3 gap-2">
@@ -76,6 +150,7 @@ const ReportForm: React.FC = () => {
             </div>
           </div>
           
+          {/* Description */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-signaldude-text-muted">Description (Optional)</label>
             <Textarea
