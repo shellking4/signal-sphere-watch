@@ -5,19 +5,24 @@ declare namespace google {
       constructor(mapDiv: Element, options?: MapOptions);
       setCenter(latLng: LatLng | LatLngLiteral): void;
       setZoom(zoom: number): void;
+      getCenter(): LatLng;
+      getZoom(): number;
     }
     
     class Marker {
       constructor(opts?: MarkerOptions);
       setMap(map: Map | null): void;
       setPosition(latLng: LatLng | LatLngLiteral): void;
+      getPosition(): LatLng;
       addListener(eventName: string, handler: Function): MapsEventListener;
     }
     
     class InfoWindow {
       constructor(opts?: InfoWindowOptions);
       open(map?: Map, anchor?: Marker): void;
+      close(): void;
       setContent(content: string | Node): void;
+      getContent(): string | Node;
     }
     
     class Geocoder {
@@ -28,12 +33,23 @@ declare namespace google {
       constructor(lat: number, lng: number);
       lat(): number;
       lng(): number;
+      toString(): string;
+      toJSON(): LatLngLiteral;
+      equals(other: LatLng): boolean;
     }
     
     interface MapOptions {
       center?: LatLng | LatLngLiteral;
       zoom?: number;
       mapTypeId?: string;
+      styles?: any[];
+      disableDefaultUI?: boolean;
+      zoomControl?: boolean;
+      mapTypeControl?: boolean;
+      scaleControl?: boolean;
+      streetViewControl?: boolean;
+      rotateControl?: boolean;
+      fullscreenControl?: boolean;
       [key: string]: any;
     }
     
@@ -43,11 +59,16 @@ declare namespace google {
       title?: string;
       icon?: any;
       animation?: number;
+      draggable?: boolean;
+      visible?: boolean;
+      zIndex?: number;
       [key: string]: any;
     }
     
     interface InfoWindowOptions {
       content?: string | Node;
+      position?: LatLng | LatLngLiteral;
+      maxWidth?: number;
       [key: string]: any;
     }
     
@@ -63,6 +84,9 @@ declare namespace google {
     interface GeocoderRequest {
       address?: string;
       location?: LatLng | LatLngLiteral;
+      bounds?: any;
+      componentRestrictions?: any;
+      region?: string;
       [key: string]: any;
     }
     
@@ -75,7 +99,14 @@ declare namespace google {
       formatted_address: string;
       geometry: {
         location: LatLng;
+        location_type?: string;
+        bounds?: any;
+        viewport?: any;
       };
+      partial_match?: boolean;
+      place_id?: string;
+      postcode_localities?: string[];
+      types?: string[];
       [key: string]: any;
     }
     
@@ -112,7 +143,7 @@ declare namespace google {
   }
 }
 
-// We need to declare global to add properties to the window object
+// Make sure the Google namespace is available globally
 declare global {
   interface Window {
     google: typeof google;
