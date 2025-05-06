@@ -4,12 +4,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useEvents } from '@/contexts/EventContext';
-import { Car, PowerOff, TrafficCone } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Car, PowerOff, TrafficCone, Lock } from 'lucide-react';
 import { EventType } from '@/types/events';
 import { cn } from '@/lib/utils';
+import LoginDialog from './LoginDialog';
 
 const ReportForm: React.FC = () => {
   const { addEvent } = useEvents();
+  const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<EventType | null>(null);
   const [description, setDescription] = useState('');
@@ -23,6 +26,19 @@ const ReportForm: React.FC = () => {
     setSelectedType(null);
     setDescription('');
   };
+
+  // If user is not authenticated, show login button instead
+  if (!isAuthenticated) {
+    return (
+      <LoginDialog
+        trigger={
+          <Button size="lg" className="shadow-lg bg-signaldude-accent hover:bg-signaldude-accent/90 text-white font-semibold rounded-xl">
+            <Lock size={16} className="mr-1" /> Sign In to Report
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
