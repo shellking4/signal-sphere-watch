@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -37,17 +36,30 @@ const ReportForm: React.FC = () => {
     try {
       const location = await getCurrentLocation();
       
-      if (location && window.google) {
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ 'location': location }, (results, status) => {
-          if (status === 'OK' && results && results[0]) {
-            setLocationPreview(results[0].formatted_address);
-          } else {
-            setLocationPreview('Unable to determine your location address');
+      if (location) {
+        try {
+          // Use Nominatim API for reverse geocoding
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${location.lat}&lon=${location.lng}&format=json`
+          );
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch address information');
           }
-        });
+          
+          const data = await response.json();
+          
+          if (data && data.display_name) {
+            setLocationPreview(data.display_name);
+          } else {
+            setLocationPreview('Location found, but address information is not available');
+          }
+        } catch (error) {
+          console.error('Error fetching address:', error);
+          setLocationPreview('Error getting address information');
+        }
       } else {
-        setLocationPreview('Location coordinates available, but address lookup requires Google Maps API');
+        setLocationPreview('Unable to determine your location');
       }
     } catch (error) {
       console.error('Error getting location preview:', error);

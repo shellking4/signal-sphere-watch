@@ -3,106 +3,76 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useEvents } from '@/contexts/EventContext';
 import { PowerOff, TrafficCone, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const MapView: React.FC = () => {
   const { events, activeFilter } = useEvents();
   const mapRef = useRef<HTMLDivElement>(null);
-  const googleMapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const [apiKey, setApiKey] = useState<string>('');
+  const leafletMapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   
   const filteredEvents = activeFilter === 'all' 
     ? events.filter(e => e.isActive) 
     : events.filter(e => e.isActive && e.type === activeFilter);
   
-  // Function to initialize Google Maps
+  // Function to initialize Leaflet map
   const initializeMap = () => {
-    if (!window.google || !mapRef.current) return;
+    if (!mapRef.current || leafletMapRef.current) return;
     
-    const mapOptions = {
-      center: { lat: 40.7128, lng: -74.006 }, // New York
-      zoom: 12,
-      mapTypeControl: false,
-      fullscreenControl: false,
-      streetViewControl: false,
-      styles: [
-        {
-          featureType: "all",
-          elementType: "labels.text.fill",
-          stylers: [{ color: "#ffffff" }]
-        },
-        {
-          featureType: "all",
-          elementType: "labels.text.stroke",
-          stylers: [{ color: "#000000" }, { lightness: 13 }]
-        },
-        {
-          featureType: "water",
-          elementType: "geometry",
-          stylers: [{ color: "#0e1626" }]
-        },
-        {
-          featureType: "landscape",
-          elementType: "all",
-          stylers: [{ color: "#08304b" }]
-        },
-        {
-          featureType: "road",
-          elementType: "geometry.stroke",
-          stylers: [{ color: "#1a3646" }]
-        }
-      ]
-    };
+    // Create the map instance
+    const map = L.map(mapRef.current).setView([40.7128, -74.006], 12);
     
-    googleMapRef.current = new window.google.maps.Map(mapRef.current, mapOptions);
+    // Add the OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Store the map reference
+    leafletMapRef.current = map;
     setMapLoaded(true);
   };
   
-  // Load Google Maps API
+  // Initialize the map on component mount
   useEffect(() => {
-    if (!apiKey) return;
+    initializeMap();
     
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = initializeMap;
-    document.head.appendChild(script);
-    
+    // Clean up on unmount
     return () => {
-      document.head.removeChild(script);
+      if (leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+      }
     };
-  }, [apiKey]);
+  }, []);
   
   // Update markers when events or filter change
   useEffect(() => {
-    if (!mapLoaded || !googleMapRef.current) return;
+    if (!mapLoaded || !leafletMapRef.current) return;
     
     // Clear existing markers
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
     
     // Add new markers
     filteredEvents.forEach(event => {
-      const markerIcon = getMarkerIcon(event.type);
+      const markerColor = getMarkerColor(event.type);
       
-      const marker = new window.google.maps.Marker({
-        position: { lat: event.location.lat, lng: event.location.lng },
-        map: googleMapRef.current,
-        title: getEventTitle(event.type),
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          fillColor: markerIcon.color,
-          fillOpacity: 0.7,
-          strokeWeight: 2,
-          strokeColor: markerIcon.borderColor,
-          scale: 10
-        },
-        animation: window.google.maps.Animation.DROP
+      // Create a custom icon
+      const icon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div style="background-color: ${markerColor.color}; border: 2px solid ${markerColor.borderColor}; width: 10px; height: 10px; border-radius: 50%;"></div>`,
+        iconSize: [15, 15],
+        iconAnchor: [7.5, 7.5]
       });
       
-      const infoContent = `
+      const marker = L.marker([event.location.lat, event.location.lng], {
+        icon,
+        title: getEventTitle(event.type)
+      }).addTo(leafletMapRef.current!);
+      
+      const popupContent = `
         <div class="p-2">
           <h3 class="font-bold">${getEventTitle(event.type)}</h3>
           <p>${event.description || 'No description provided'}</p>
@@ -110,14 +80,7 @@ const MapView: React.FC = () => {
         </div>
       `;
       
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: infoContent
-      });
-      
-      marker.addListener('click', () => {
-        infoWindow.open(googleMapRef.current, marker);
-      });
-      
+      marker.bindPopup(popupContent);
       markersRef.current.push(marker);
     });
   }, [filteredEvents, mapLoaded]);
@@ -135,7 +98,7 @@ const MapView: React.FC = () => {
     }
   };
   
-  const getMarkerIcon = (type: string) => {
+  const getMarkerColor = (type: string) => {
     switch (type) {
       case 'power-outage':
         return { color: '#ef4444', borderColor: '#b91c1c' };
@@ -147,35 +110,6 @@ const MapView: React.FC = () => {
         return { color: '#6b7280', borderColor: '#4b5563' };
     }
   };
-
-  if (!apiKey) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-800 rounded-xl p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-white">Google Maps API Key Required</h3>
-        <p className="text-sm text-gray-300 text-center">
-          Please enter your Google Maps API key to enable map functionality
-        </p>
-        <input 
-          type="text"
-          placeholder="Enter Google Maps API Key"
-          className="px-4 py-2 w-full max-w-md bg-slate-700 border border-slate-600 rounded text-white"
-          onChange={(e) => setApiKey(e.target.value)}
-        />
-        <div className="text-xs text-gray-400 text-center max-w-md">
-          You can get an API key from the 
-          <a 
-            href="https://developers.google.com/maps/documentation/javascript/get-api-key" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-400 hover:underline mx-1"
-          >
-            Google Cloud Console
-          </a>
-          (Maps JavaScript API and Geocoding API should be enabled)
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-full">

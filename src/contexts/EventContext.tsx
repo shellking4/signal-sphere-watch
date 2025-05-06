@@ -87,26 +87,20 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
-  // Get address from coordinates using Google Maps Geocoding API
+  // Get address from coordinates using OpenStreetMap Nominatim API
   const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
     try {
-      if (!window.google) {
-        return "Unknown location";
+      // Use Nominatim API to get address information (reverse geocoding)
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch address');
       }
       
-      const geocoder = new window.google.maps.Geocoder();
-      const response = await new Promise<google.maps.GeocoderResponse>((resolve, reject) => {
-        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-          if (status === "OK" && results && results[0]) {
-            resolve(results);
-          } else {
-            reject(status);
-          }
-        });
-      });
+      const data = await response.json();
       
-      if (response && response[0]) {
-        return response[0].formatted_address;
+      if (data && data.display_name) {
+        return data.display_name;
       }
       
       return "Unknown location";
@@ -129,9 +123,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       let address = "Unknown location";
       
       try {
-        if (window.google) {
-          address = await getAddressFromCoordinates(location.lat, location.lng);
-        }
+        address = await getAddressFromCoordinates(location.lat, location.lng);
       } catch (error) {
         console.error("Error getting address:", error);
       }
