@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useEvents } from '@/contexts/EventContext';
-import { MapPin, PowerOff, TrafficCone, PoliceCar } from 'lucide-react';
+import { MapPin, PowerOff, TrafficCone, Car } from 'lucide-react';
 
 const MapView: React.FC = () => {
   const { events, activeFilter } = useEvents();
@@ -16,8 +16,8 @@ const MapView: React.FC = () => {
         return <PowerOff size={18} className="text-red-500" />;
       case 'traffic-jam':
         return <TrafficCone size={18} className="text-amber-500" />;
-      case 'police-arrest':
-        return <PoliceCar size={18} className="text-blue-500" />;
+      case 'police-activity':
+        return <Car size={18} className="text-blue-500" />;
       default:
         return <MapPin size={18} />;
     }
@@ -29,7 +29,7 @@ const MapView: React.FC = () => {
         return 'bg-red-500/20 border-red-500';
       case 'traffic-jam':
         return 'bg-amber-500/20 border-amber-500';
-      case 'police-arrest':
+      case 'police-activity':
         return 'bg-blue-500/20 border-blue-500';
       default:
         return 'bg-gray-500/20 border-gray-500';

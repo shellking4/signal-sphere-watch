@@ -43,7 +43,7 @@ const initialEvents: Event[] = [
   },
   {
     id: '3',
-    type: 'police-arrest',
+    type: 'police-activity',
     location: {
       lat: 40.7223,
       lng: -73.9874,

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useEvents } from '@/contexts/EventContext';
-import { PoliceCar, PowerOff, TrafficCone } from 'lucide-react';
+import { Car, PowerOff, TrafficCone } from 'lucide-react';
 import { EventType } from '@/types/events';
 import { cn } from '@/lib/utils';
 
@@ -42,7 +42,7 @@ const ReportForm: React.FC = () => {
               {[
                 { type: 'power-outage' as EventType, label: 'Power Outage', icon: PowerOff, color: 'from-red-500/50 to-red-600/50' },
                 { type: 'traffic-jam' as EventType, label: 'Traffic Jam', icon: TrafficCone, color: 'from-amber-500/50 to-amber-600/50' },
-                { type: 'police-arrest' as EventType, label: 'Police Activity', icon: PoliceCar, color: 'from-blue-500/50 to-blue-600/50' },
+                { type: 'police-activity' as EventType, label: 'Police Activity', icon: Car, color: 'from-blue-500/50 to-blue-600/50' },
               ].map((option) => (
                 <button
                   key={option.type}

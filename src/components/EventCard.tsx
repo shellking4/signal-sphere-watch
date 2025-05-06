@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, MapPin, Clock, TrafficCone, PoliceCar, PowerOff } from 'lucide-react';
+import { AlertTriangle, MapPin, Clock, TrafficCone, Car, PowerOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Event } from '@/types/events';
 import { useEvents } from '@/contexts/EventContext';
@@ -28,8 +28,8 @@ const getEventIcon = (type: Event['type']) => {
       return <PowerOff className="text-signaldude-danger" />;
     case 'traffic-jam':
       return <TrafficCone className="text-signaldude-warning" />;
-    case 'police-arrest':
-      return <PoliceCar className="text-signaldude-primary" />;
+    case 'police-activity':
+      return <Car className="text-signaldude-primary" />;
     default:
       return <AlertTriangle className="text-signaldude-accent" />;
   }
@@ -42,7 +42,7 @@ const getEventColorClass = (type: Event['type']) => {
       return 'bg-red-500/10 border-red-500/20';
     case 'traffic-jam':
       return 'bg-amber-500/10 border-amber-500/20';
-    case 'police-arrest':
+    case 'police-activity':
       return 'bg-blue-500/10 border-blue-500/20';
     default:
       return 'bg-slate-500/10 border-slate-500/20';
@@ -56,7 +56,7 @@ const getEventTitle = (type: Event['type']) => {
       return 'Power Outage';
     case 'traffic-jam':
       return 'Traffic Jam';
-    case 'police-arrest':
+    case 'police-activity':
       return 'Police Activity';
     default:
       return 'Unknown Event';
