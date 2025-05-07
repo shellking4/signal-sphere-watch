@@ -1,5 +1,5 @@
 
-export type EventType = 'power-outage' | 'traffic-jam' | 'police-activity';
+export type EventType = 'power-outage' | 'traffic-jam' | 'police-activity' | 'bank-counter';
 
 export interface Event {
   id: string;

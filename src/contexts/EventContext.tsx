@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Event, EventType } from '@/types/events';
 import { toast } from '@/components/ui/sonner';
@@ -53,6 +54,19 @@ const initialEvents: Event[] = [
     reporter: 'Anonymous',
     timestamp: Date.now() - 1000 * 60 * 5, // 5 minutes ago
     description: 'Multiple police cars on site',
+    isActive: true,
+  },
+  {
+    id: '4',
+    type: 'bank-counter',
+    location: {
+      lat: 40.7433,
+      lng: -73.9912,
+      address: 'Financial District, New York, NY',
+    },
+    reporter: 'Anonymous',
+    timestamp: Date.now() - 1000 * 60 * 2, // 2 minutes ago
+    description: 'Over 50 people waiting in line at CitiBank',
     isActive: true,
   },
 ];
