@@ -7,6 +7,7 @@ import EventCard from '@/components/EventCard';
 import ReportForm from '@/components/ReportForm';
 import EventFilter from '@/components/EventFilter';
 import { useEvents } from '@/contexts/EventContext';
+import LeafletMapView from '@/components/LeafletMapView';
 
 const EventsList: React.FC = () => {
   const { events, activeFilter } = useEvents();
@@ -54,7 +55,7 @@ const Index = () => {
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 overflow-hidden">
           {/* Map Section */}
           <div className="md:order-2 h-[300px] md:h-full rounded-xl overflow-hidden">
-            <MapView />
+              <LeafletMapView />
           </div>
           
           {/* Events Section */}
