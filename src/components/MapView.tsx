@@ -18,7 +18,7 @@ const getEventMarkerIcon = (type: string) => {
     case 'police-activity':
       iconColor = 'blue';
       break;
-    case 'bank-counter':
+    case 'long-queue':
       iconColor = 'gold';
       break;
     default:

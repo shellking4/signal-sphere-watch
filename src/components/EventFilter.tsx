@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useEvents } from '@/contexts/EventContext';
-import { PowerOff, TrafficCone, Car, CircleEqual } from 'lucide-react';
+import { PowerOff, TrafficCone, Car, CircleEqual, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const EventFilter: React.FC = () => {
@@ -13,6 +13,7 @@ const EventFilter: React.FC = () => {
     { id: 'power-outage', label: 'Power Outages', icon: PowerOff, color: 'text-red-500' },
     { id: 'traffic-jam', label: 'Traffic Jams', icon: TrafficCone, color: 'text-amber-500' },
     { id: 'police-activity', label: 'Police Activity', icon: Car, color: 'text-blue-500' },
+    { id: 'long-queue', label: 'Long Queue', icon: Users, color: 'text-amber-400' },
   ];
 
   return (

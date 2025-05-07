@@ -58,7 +58,7 @@ const initialEvents: Event[] = [
   },
   {
     id: '4',
-    type: 'bank-counter',
+    type: 'long-queue',
     location: {
       lat: 40.7433,
       lng: -73.9912,

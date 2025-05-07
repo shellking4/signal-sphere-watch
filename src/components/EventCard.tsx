@@ -32,7 +32,7 @@ const getEventIcon = (type: Event['type']) => {
       return <TrafficCone className="text-signaldude-warning" />;
     case 'police-activity':
       return <Car className="text-signaldude-primary" />;
-    case 'bank-counter':
+    case 'long-queue':
       return <Users className="text-amber-400" />;
     default:
       return <AlertTriangle className="text-signaldude-accent" />;
@@ -48,7 +48,7 @@ const getEventColorClass = (type: Event['type']) => {
       return 'bg-amber-500/10 border-amber-500/20';
     case 'police-activity':
       return 'bg-blue-500/10 border-blue-500/20';
-    case 'bank-counter':
+    case 'long-queue':
       return 'bg-amber-400/10 border-amber-400/20';
     default:
       return 'bg-slate-500/10 border-slate-500/20';
@@ -64,7 +64,7 @@ const getEventTitle = (type: Event['type']) => {
       return 'Traffic Jam';
     case 'police-activity':
       return 'Police Activity';
-    case 'bank-counter':
+    case 'long-queue':
       return 'Long Queue';
     default:
       return 'Unknown Event';
