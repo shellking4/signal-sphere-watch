@@ -90,7 +90,7 @@ const ReportForm: React.FC = () => {
           Report Event
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-signaldude-bg-light text-signaldude-text border-slate-700 w-[90%] max-w-md">
+      <DialogContent className="bg-signaldude-bg-light text-signaldude-text border-slate-700 w-[90%] max-w-md" style={{ zIndex: 9999 }}>
         <DialogHeader>
           <DialogTitle className="gradient-text text-xl font-bold">Report New Event</DialogTitle>
           <DialogDescription className="text-signaldude-text-muted">
