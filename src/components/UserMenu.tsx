@@ -21,24 +21,26 @@ const UserMenu: React.FC = () => {
     );
   }
 
+  // Get display name from email or use generic username
+  const displayName = user?.email?.split('@')[0] || 'User';
+
   return (
     <div className="flex items-center gap-2">
       <div className="hidden sm:block text-right">
-        <p className="text-sm font-medium">{user?.username}</p>
+        <p className="text-sm font-medium">{displayName}</p>
         <p className="text-xs text-signaldude-text-muted">Network Member</p>
       </div>
       <Button 
         variant="outline" 
         size="icon"
         className="relative border border-slate-700"
-        onClick={logout}
       >
         <User size={18} />
       </Button>
       <Button 
         variant="ghost" 
         size="sm" 
-        onClick={logout}
+        onClick={() => logout()}
         className="text-signaldude-text-muted hover:text-signaldude-text sm:hidden"
       >
         <LogOut size={16} className="mr-1.5" />

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BellRing } from 'lucide-react';
+import UserMenu from './UserMenu';
 
 const Header: React.FC = () => {
   return (
@@ -15,9 +16,7 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center">
-          <span className="text-xs text-signaldude-text-muted">NY</span>
-        </div>
+        <UserMenu />
       </div>
     </header>
   );
