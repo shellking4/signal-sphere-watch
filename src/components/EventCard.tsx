@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AlertTriangle, MapPin, Clock, TrafficCone, Car, PowerOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -82,7 +83,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     if (isAuthenticated) {
       resolveEvent(event.id);
     } else {
-      toast.error("You need to sign in to resolve events");
+      toast.error("You need to sign in to resolve events", {
+        className: "bg-signaldude-bg-light text-signaldude-text border-red-500/20"
+      });
     }
   };
 
