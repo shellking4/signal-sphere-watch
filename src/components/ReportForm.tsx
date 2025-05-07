@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useEvents } from '@/contexts/EventContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Car, PowerOff, TrafficCone, Lock, MapPin, Loader2 } from 'lucide-react';
+import { Car, PowerOff, TrafficCone, Lock, MapPin, Loader2, Users } from 'lucide-react';
 import { EventType } from '@/types/events';
 import { cn } from '@/lib/utils';
 import LoginDialog from './LoginDialog';
@@ -145,6 +146,7 @@ const ReportForm: React.FC = () => {
                 { type: 'power-outage' as EventType, label: 'Power Outage', icon: PowerOff, color: 'from-red-500/50 to-red-600/50' },
                 { type: 'traffic-jam' as EventType, label: 'Traffic Jam', icon: TrafficCone, color: 'from-amber-500/50 to-amber-600/50' },
                 { type: 'police-activity' as EventType, label: 'Police Activity', icon: Car, color: 'from-blue-500/50 to-blue-600/50' },
+                { type: 'long-queue' as EventType, label: 'Long Queue', icon: Users, color: 'from-amber-400/50 to-amber-500/50' },
               ].map((option) => (
                 <button
                   key={option.type}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertTriangle, MapPin, Clock, TrafficCone, Car, PowerOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
