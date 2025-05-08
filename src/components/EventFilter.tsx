@@ -1,20 +1,59 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useEvents } from '@/contexts/EventContext';
-import { PowerOff, TrafficCone, Car, CircleEqual, Users } from 'lucide-react';
+import { DynamicIcon } from 'lucide-react/dynamic'
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
+import { EventType } from '@/types/events';
+import { CircleEqual } from 'lucide-react';
+import { useEvents } from '@/contexts/EventContext';
+
 
 const EventFilter: React.FC = () => {
-  const { activeFilter, setActiveFilter } = useEvents();
+  const [eventTypes, setEventTypes] = useState<any[]>([]);
+  const [filters, setFilters] = useState<any[]>([]);
 
-  const filters = [
-    { id: 'all', label: 'All Events', icon: CircleEqual },
-    { id: 'power-outage', label: 'Power Outages', icon: PowerOff, color: 'text-red-500' },
-    { id: 'traffic-jam', label: 'Traffic Jams', icon: TrafficCone, color: 'text-amber-500' },
-    { id: 'police-activity', label: 'Police Activity', icon: Car, color: 'text-blue-500' },
-    { id: 'long-queue', label: 'Long Queue', icon: Users, color: 'text-amber-400' },
-  ];
+  const { activeFilter, setActiveFilter } = useEvents();
+  
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    const fetchEventTypes = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data: eventTypesData, error: fetchError }: any = await supabase.from('event_types').select('*');
+        if (fetchError) {
+          throw new Error(fetchError.message);
+        }
+        let filters = []
+        for (const eventType of eventTypesData) {
+          const filter = {
+            eventTypeId: eventType.id,
+            id: eventType.name,
+            label: eventType.label,
+            icon: eventType.icon,
+            color: eventType.color_class
+          }
+          filters.push(filter)
+        }
+        filters.unshift({ id: 'all', label: 'All Events', icon: 'circle-equal' });
+        setFilters(filters);
+        setEventTypes(eventTypesData || []);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch events';
+        setError(errorMessage);
+        console.error('Error fetching events:', err);
+        toast.error('Error fetching events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEventTypes();
+  }, []);
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -32,7 +71,7 @@ const EventFilter: React.FC = () => {
           )}
           onClick={() => setActiveFilter(filter.id as any)}
         >
-          <filter.icon size={16} />
+          <DynamicIcon name={filter.icon} size={16} />
           {filter.label}
         </Button>
       ))}

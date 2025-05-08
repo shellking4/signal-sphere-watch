@@ -72,7 +72,7 @@ const getEventTitle = (type: Event['type']) => {
 };
 
 interface EventCardProps {
-  event: Event;
+  event: Event | any;
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
@@ -100,7 +100,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             <h3 className="font-semibold text-lg">{getEventTitle(event.type)}</h3>
             <div className="flex items-center gap-1 text-xs text-signaldude-text-muted">
               <Clock size={14} />
-              <span>{formatTime(event.timestamp)}</span>
+              <span>{formatTime(new Date(event.created_at).getTime())}</span>
             </div>
           </div>
         </div>

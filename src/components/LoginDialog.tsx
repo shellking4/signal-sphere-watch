@@ -66,10 +66,10 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ trigger }) => {
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-2 mb-4 bg-signaldude-bg-dark">
+          {/* <TabsList className="grid grid-cols-2 mb-4 bg-signaldude-bg-dark">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
+          </TabsList> */}
           
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4">

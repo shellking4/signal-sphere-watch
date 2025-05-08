@@ -38,10 +38,10 @@ const UserMenu: React.FC = () => {
         <User size={18} />
       </Button>
       <Button 
-        variant="ghost" 
+        variant="ghost"
         size="sm" 
         onClick={() => logout()}
-        className="text-signaldude-text-muted hover:text-signaldude-text sm:hidden"
+        className="text-signaldude-text-muted hover:text-gray-600"
       >
         <LogOut size={16} className="mr-1.5" />
         Sign Out
