@@ -59,9 +59,9 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ trigger }) => {
       </DialogTrigger>
       <DialogContent className="bg-signaldude-bg-light text-signaldude-text border-slate-700 w-[90%] max-w-md" style={{ zIndex: 9999 }}>
         <DialogHeader>
-          <DialogTitle className="gradient-text text-xl font-bold">Join SignalDude Network</DialogTitle>
+          <DialogTitle className="gradient-text text-xl font-bold">Connect to the CyclopeNetwork</DialogTitle>
           <DialogDescription className="text-signaldude-text-muted">
-            Access community alerts and contribute to the network
+            The CyclopeNetwork is a global network of highly trusted individuals spread accross the globe and dedicated to helping provide the latest alerts and informations to the public
           </DialogDescription>
         </DialogHeader>
         
