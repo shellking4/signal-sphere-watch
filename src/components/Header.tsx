@@ -15,9 +15,9 @@ const Header: React.FC = () => {
         </h1>
       </div>
       
-      <div className="flex items-center gap-2">
+      {/* <div className="flex items-center gap-2">
         <UserMenu />
-      </div>
+      </div> */}
     </header>
   );
 };
