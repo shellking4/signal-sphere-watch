@@ -173,7 +173,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
 
       // Generate a random reporter ID for anonymous users
-      const reporterId = user?.id || `anonymous-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const reporterId = user?.id || null;
 
       const queryResult = await supabase
         .from('event_types')

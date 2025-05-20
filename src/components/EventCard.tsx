@@ -108,10 +108,16 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           <Button 
             variant="outline" 
             size="sm" 
+            className={`text-xs h-8`}
+            onClick={handleResolveClick}
+          >
+            {/* <Button 
+            variant="outline" 
+            size="sm" 
             className={`text-xs h-8 ${!isAuthenticated ? 'opacity-50' : ''}`}
             onClick={handleResolveClick}
             disabled={!isAuthenticated}
-          >
+          > */}
             Resolve
           </Button>
         )}
