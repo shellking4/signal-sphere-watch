@@ -9,7 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      event_types: {
+        Row: {
+          color_class: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          label: string | null
+          name: string
+        }
+        Insert: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          label?: string | null
+          name: string
+        }
+        Update: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          label?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          latitude: number
+          longitude: number | null
+          name: string | null
+          reporter: string | null
+          type: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude: number
+          longitude?: number | null
+          name?: string | null
+          reporter?: string | null
+          type?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number
+          longitude?: number | null
+          name?: string | null
+          reporter?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_type_fkey"
+            columns: ["type"]
+            isOneToOne: false
+            referencedRelation: "event_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

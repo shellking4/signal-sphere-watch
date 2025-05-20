@@ -8,20 +8,21 @@ import LoginDialog from './LoginDialog';
 const UserMenu: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
 
+  // If not authenticated, show sign in option but don't make it required
   if (!isAuthenticated) {
     return (
       <LoginDialog 
         trigger={
           <Button variant="outline" className="text-signaldude-text border-slate-700 bg-signaldude-bg-dark hover:bg-signaldude-bg-light">
             <LogIn className="mr-1.5" size={16} />
-            Sign In
+            Sign In (Optional)
           </Button>
         }
       />
     );
   }
 
-  // Get display name from email or use generic username
+  // For authenticated users, show their info
   const displayName = user?.email?.split('@')[0] || 'User';
 
   return (

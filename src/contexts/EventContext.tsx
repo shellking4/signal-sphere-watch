@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Event, EventType } from '@/types/events';
 import { toast } from '@/components/ui/sonner';
@@ -32,7 +31,6 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const { user } = useAuth();
 
   useEffect(() => {
-
     supabase.channel('custom-all-channel')
       .on(
         'postgres_changes',
@@ -47,7 +45,6 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setIsLoading(true);
       setError(null);
       try {
-
         const supabaseQuery = supabase
           .from('events')
           .select(`
@@ -175,19 +172,8 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.error("Error getting address:", error);
       }
 
-      const newEvent = {
-        id: Date.now().toString(),
-        type,
-        location: {
-          lat: location.lat,
-          lng: location.lng,
-          address
-        },
-        reporter: user.id,
-        timestamp: Date.now(),
-        description,
-        is_active: true,
-      };
+      // Generate a random reporter ID for anonymous users
+      const reporterId = user?.id || `anonymous-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       const queryResult = await supabase
         .from('event_types')
@@ -201,16 +187,24 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         latitude: location.lat,
         longitude: location.lng,
         address,
-        reporter: user.id,
+        reporter: reporterId,
         description,
         is_active: true,
       };
+      
       const { data, error } = await supabase
         .from('events')
         .insert([
           newEventData
         ])
         .select();
+        
+      if (error) {
+        console.error("Error inserting event:", error);
+        toast.error("Failed to report event");
+        return;
+      }
+      
       setActiveFilter(type);
       toast.success("Event reported successfully!");
     } catch (error) {
