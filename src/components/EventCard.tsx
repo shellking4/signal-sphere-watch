@@ -89,6 +89,10 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     }
   };
 
+  const handleResolveClickNoAuth = () => {
+    resolveEvent(event.id);
+  };
+
   return (
     <div className={`event-card animate-fade-in ${getEventColorClass(event.type)} ${!event.isActive ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between">
@@ -109,7 +113,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             variant="outline" 
             size="sm" 
             className={`text-xs h-8`}
-            onClick={handleResolveClick}
+            onClick={handleResolveClickNoAuth}
           >
             {/* <Button 
             variant="outline" 
